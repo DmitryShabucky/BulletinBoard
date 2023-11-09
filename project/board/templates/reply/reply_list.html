@@ -1,0 +1,49 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+{% block content %}
+<br>
+<h5>Объявление:</h5><a href="{% url 'post' post.pk %}">{{ post.title }}</a>
+{% if replies %}
+
+<ul>
+<a>Всего откликов: ({{ replies.count }})</a>
+ <hr>
+{% for reply in replies %}
+<li>
+Дата: {{ reply.created|date:'m d Y' }}<br>
+Автор: {{ reply.user.username }}<br>
+{{reply.text}}<br>
+ </li>
+ <br>
+{% endfor%}
+ </ul>
+
+{% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+{% else %}
+<h3>Откликов нет</h3>
+{% endif%}
+
+{% endblock content %}
+

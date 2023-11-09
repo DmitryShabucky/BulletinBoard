@@ -1,0 +1,48 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+
+<h1>Объявления</h1>
+
+
+{% if posts %}
+
+<h5>Количество статей: {{ posts|length }}</h5>
+
+<table border="3" , cellpadding="5" , bgcolor="#faebd7">
+
+    <tr bgcolor="black" style="color: bisque">
+        <td><h4>Категории</h4></td>
+        <td><h4>Заголовок</h4></td>
+        <td><h4>Содержание</h4></td>
+        <td><h4>Дата публикации</h4></td>
+        <td><h4>Автор</h4></td>
+    </tr>
+
+    {% for pst in posts %}
+
+    <tr>
+        <td align='left'><a class="nav-link" href="/posts/{{pst.pk}}">{{ pst.category.get_name_display }}</a></td>
+        <td align='left'><a class="nav-link" href="/posts/{{pst.pk}}">{{ pst.title }}</a></td>
+        <td align="left"><a class="nav-link" href="/posts/{{pst.pk}}">{{ pst.content|safe|truncatewords:20 }}</a></td>
+        <td align="center">{{ pst.created|date:'d m Y'}}</td>
+        <td align="center">{{ pst.author.username }}</td>
+
+    </tr>
+
+
+
+    {%endfor%}
+
+</table>
+    <br>
+{% else %}
+<h2>Объявлений не найдено</h2>
+{% endif %}
+
+
+{% endblock content %}
