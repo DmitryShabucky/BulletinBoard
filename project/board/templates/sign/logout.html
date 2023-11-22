@@ -1,5 +1,10 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h2> Вы вышли из системы </h2>
+<br><br><br><br>
+<h2 align="center"> Вы вышли из системы </h2>
+<br>
+<div  style="text-align: center">
+<a href="{% url 'login' %}">Зарегестрироваться / Войти</a>
+</div>
 {% endblock %}

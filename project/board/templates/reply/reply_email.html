@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>{{ post.username }} Добрый день!</h2>
+    <p> Пользователь {{ user.username }} оставил отклик на вашу статью: {{ post.title|truncatechars:50 }} </p>
+    <p> Перейти на страницу со статьей: {{ url }}</p>
+</body>
+</html>

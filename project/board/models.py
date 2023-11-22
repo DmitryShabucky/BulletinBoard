@@ -14,13 +14,12 @@ class Category(models.Model):
 
 
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', related_name='user')
     title = models.CharField('Заголовок', max_length=250, null=False)
     content = RichTextUploadingField(null=True)
     created = models.DateTimeField("Дата публикации", auto_now_add=True)
     updated = models.DateTimeField("Дата обновления", auto_now=True)
-    media = models.FileField('Загрузить файл', upload_to='post/', null=True, blank=True)
-    category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Категория')
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Категория', related_name='categories')
 
     def __str__(self):
         return f'{self.title}. {self.content}. Опубликовано: {self.created.date()}'
@@ -30,15 +29,18 @@ class Post(models.Model):
 
 
 class Reply(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reply')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='replies')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.text}. Добавлено: {self.created.date()}. Автор: {self.user.username} '
 
     def get_absolute_url(self):
         return reverse('post', args=[int(self.pk)])
 
-
+    def status_update(self):
+        self.status = True
+        self.save()
 

@@ -1,0 +1,14 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+<br><br>
+<h1>Только зарегестрированные пользователи могут читать и оставлять отклики.</h1>
+<br><br><br>
+<a href="{% url 'login' %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span> Зарегестрироваться / Войти</a>
+<br><br><br>
+<button onclick="history.back()">Назад</button><br><br>
+{% endblock content %}

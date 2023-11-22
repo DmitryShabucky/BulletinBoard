@@ -5,20 +5,25 @@ Post
 {% endblock title %}
 
 {% block content %}
-<br>
-<h5>Объявление: {{post.id}}</h5>
 
-<h7 align="left">Автор: {{ post.author }}</h7>
-<h7 align="left">Дата публикации: {{ post.created | date:'d m Y' }}</h7>
-<h7 align="left">Категория: {{ post.category}}</h7><hr>
-<h5 align="center">{{ post.title }}</h5>
-<h5 align="center">{{ post.media }}</h5>
+<br>
+
+<h5>Объявление</h5>
+<h7 align="left">Категория: {{ post.category}}</h7><br>
+<h7 align="left">Дата публикации: {{ post.created | date:'d m Y' }}</h7><br>
+<h7 align="left">Автор: {{ post.author }}</h7><br>
+<br>
+<h7>{{ post.title }}</h7><br><br>
 <a>{{ post.content | safe }}</a>
 <br>
+
 <form method="POST" action="" >
   {% csrf_token %}
   {{ form.as_p }}
 <button type="submit" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Оставить отклик</button>
-<a href="{% url 'reply_list' post.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Все отклики ({{ post.reply.all.count }})</a>
+<a href="{% url 'reply_list' post.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Все отклики ({{ post.replies.all.count }})</a>
   </form>
+<br>
+<button onclick="history.back()">Назад</button>
+<br><br>
 {% endblock content %}

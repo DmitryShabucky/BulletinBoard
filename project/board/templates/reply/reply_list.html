@@ -6,7 +6,8 @@ Post
 
 {% block content %}
 <br>
-<h5>Объявление:</h5><a href="{% url 'post' post.pk %}">{{ post.title }}</a>
+<h5>Объявление:</h5><a href="{% url 'post' post.pk %}">{{ post.title }}</a><br><br>
+<a>{{ post.content|safe|truncatewords:20 }}</a>
 {% if replies %}
 
 <ul>
@@ -21,7 +22,7 @@ Post
  <br>
 {% endfor%}
  </ul>
-
+<button onclick="history.back()">Назад</button><br><br>
 {% if page_obj.has_previous %}
        <a href="?page=1">1</a>
        {% if page_obj.previous_page_number != 1 %}
@@ -30,10 +31,8 @@ Post
        {% endif %}
    {% endif %}
 
-   {# Информация о текущей странице #}
    {{ page_obj.number }}
 
-   {# Информация о следующих страницах #}
    {% if page_obj.has_next %}
        <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
        {% if paginator.num_pages != page_obj.next_page_number %}
@@ -43,6 +42,7 @@ Post
    {% endif %}
 {% else %}
 <h3>Откликов нет</h3>
+<button onclick="history.back()">Назад</button><br><br>
 {% endif%}
 
 {% endblock content %}

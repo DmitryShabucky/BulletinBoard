@@ -1,8 +1,11 @@
-{% extends "main.html" %}
+{% extends "default.html" %}
 
 {% block content %}
-<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
-
-<button> <a href="sign/logout/">Выйти</a> </button>
+<br>
+<h5 align="left">Личный кабинет: {{request.user.username}}</h5><br>
+{% if posts %}
+Все посты: <a href="{% url 'user_posts'  %}">Перейти</a>
+{% else %}
+Вы еще не оставили ни одного объявления.
+{% endif %}
 {% endblock %}
