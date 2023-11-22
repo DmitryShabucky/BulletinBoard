@@ -238,6 +238,3 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = True
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-# EMAIL_HOST_USER = 'dmz.sh'
-# EMAIL_HOST_PASSWORD = 'lzlqgtajjqqnbrck'
-# DEFAULT_FROM_EMAIL = 'dmz.sh@yandex.ru'
