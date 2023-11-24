@@ -1,0 +1,12 @@
+{% extends "default.html" %}
+
+{% block content %}
+<br>
+<h5 align="left">Личный кабинет: {{request.user.username}}</h5><br>
+<h5 align="left">Персональные данные:</h5><a href="{% url 'user_detail' user.pk %}">Смотреть</a><br>
+{% if posts %}
+Все посты: ({{ posts | length }}) <a href="{% url 'user_posts'  %}">Показать</a>
+{% else %}
+Вы еще не оставили ни одного объявления.
+{% endif %}
+{% endblock %}

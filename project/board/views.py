@@ -39,11 +39,6 @@ class PostList(AuthenticationContextMixin, ListView):
     template_name = 'posts/posts.html'
     context_object_name = 'posts'
 
-    # def get_queryset(self):
-    #     self.post = get_object_or_404(Post, id=self.kwargs['pk'])
-    #     queryset = Reply.objects.filter(post=self.post).order_by('-created')
-    #     return queryset
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()

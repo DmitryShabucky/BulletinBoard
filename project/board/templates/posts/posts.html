@@ -29,7 +29,7 @@ Posts
 {% for pst in posts %}
 
         <a> Категория: {{ pst.category.get_name_display }}</a><br>
-        <a> Дата публикации: {{ pst.created|date:'d m Y'}}</a><br>
+        <a> Дата публикации: {{ pst.created|date:'d.m.Y'}}</a><br>
         <a> Автор: {{ pst.author.username }}</a><br><br>
         <a class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br>
         <a>{{ pst.content|safe|truncatewords:20 }}</a>

@@ -24,7 +24,7 @@ class PostForm(forms.ModelForm):
         fields = ['category', 'title', 'content']
 
 
-class ReplyForm(forms.ModelForm, SuccessMessageMixin):
+class ReplyForm(forms.ModelForm):
     class Meta:
         model = Reply
         fields = ['text']
@@ -34,5 +34,4 @@ class ReplyForm(forms.ModelForm, SuccessMessageMixin):
         labels = {
             'text': '',
         }
-        success_message = "Отклик оставлен. Ожидайте модерации."
 

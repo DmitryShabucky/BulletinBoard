@@ -1,0 +1,8 @@
+
+<h1>Изменение статьи</h1>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Сохранить" />
+</form>
