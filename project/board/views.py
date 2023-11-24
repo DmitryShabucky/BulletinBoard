@@ -26,8 +26,14 @@ from .forms import PostForm, ReplyForm
 #     context['is_not_author']= not self.request.protect.groups.filter(name= 'author').exists()
 #     return context
 
+class AuthenticationContextMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
+        return context
 
-class PostList(ListView):
+
+class PostList(AuthenticationContextMixin, ListView):
     model = Post
     ordering = '-created'
     template_name = 'posts/posts.html'
@@ -40,12 +46,11 @@ class PostList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
         context['categories'] = Category.objects.all()
         return context
 
 
-class ReplyList(ListView):
+class ReplyList(AuthenticationContextMixin, ListView):
     model = Reply
     template_name = 'reply/reply_list.html'
     context_object_name = 'replies'
@@ -63,11 +68,10 @@ class ReplyList(ListView):
         context = super().get_context_data(**kwargs)
         self.post = get_object_or_404(Post, id=self.kwargs['pk'])
         context['post'] = self.post
-        context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
         return context
 
 
-class PostDetail(FormMixin, DetailView):
+class PostDetail(AuthenticationContextMixin, FormMixin, DetailView):
     form_class = ReplyForm
     model = Post
     template_name = 'posts/post.html'
@@ -110,13 +114,7 @@ class PostDetail(FormMixin, DetailView):
             return ReplyForm
 
 
-def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
-    return context
-
-
-class PostCreate(CreateView, PermissionRequiredMixin):
+class PostCreate(AuthenticationContextMixin,CreateView, PermissionRequiredMixin):
     permission_required = ('board.add_post',)
     permission_denied_message = 'Для создания объявления необходимо пройти регистрацию на портале.'
     model = Post
@@ -128,7 +126,7 @@ class PostCreate(CreateView, PermissionRequiredMixin):
         return super().form_valid(form)
 
 
-class CategoryList(ListView):
+class CategoryList(AuthenticationContextMixin, ListView):
     model = Category
     template_name = 'category/category.html'
     context_object_name = 'category_list'
@@ -143,7 +141,6 @@ class CategoryList(ListView):
         context['posts'] = Post.objects.filter(category=self.category)
         context['category'] = self.category
         context['categories'] = Category.objects.all()
-        context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
         return context
 
 
