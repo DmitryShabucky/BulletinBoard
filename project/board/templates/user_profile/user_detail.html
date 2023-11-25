@@ -28,7 +28,8 @@
 
 </table>
 <br><br>
-<a href="{% url 'user_edit' request.user.id %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Изменить</a>
-
+<a href="{% url 'user_edit' request.user.id %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Редактировать</a>
+<br><br>
+<button onclick="window.location.href='{% url 'profile' %}'">Назад</button>
 
 {% endblock %}

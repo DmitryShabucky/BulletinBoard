@@ -1,8 +1,19 @@
+{% extends "default.html" %}
 
-<h1>Изменение статьи</h1>
+{% block content %}
+<h1>Изменить данные</h1>
 <hr>
-<form action="" method="post">
+
+<form action="" method="post" style="text-align: left">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Сохранить" />
+
 </form>
+<br>
+<button onclick="window.location.href='/accounts/email/'" style="float: left;">Изменить / Добавить почту</button><br><br>
+<button onclick="window.location.href='/accounts/password/change'" style="float: left;">Изменить пароль</button><br><br>
+<hr>
+<button onclick="history.back()">Назад</button><br><br>
+
+{% endblock %}

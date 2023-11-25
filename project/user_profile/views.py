@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views.generic import TemplateView, DetailView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -25,6 +26,9 @@ class UserEdit(AuthenticationContextMixin, UpdateView):
     model = User
     form_class = UserForm
     template_name = 'user_profile/profile_edit.html'
+
+    def get_success_url(self):
+        return reverse ('user_edit', args=[str(self.request.user.id)])
 
 class UserPostList(PostList):
 

@@ -2,8 +2,12 @@
 
 {% block content %}
 <br>
-<h5 align="left">Личный кабинет: {{request.user.username}}</h5><br>
-<h5 align="left">Персональные данные:</h5><a href="{% url 'user_detail' user.pk %}">Смотреть</a><br>
+<h2 align="center">Личный кабинет: {{request.user.username}}</h2><br>
+<div style="display: flex; align-items: center;">
+  <h5 style="margin-right: 10px;">Персональные данные:</h5>
+  <a href="{% url 'user_detail' user.pk  %}" class="btn btn-dark btn-sm">Смотреть</a>
+</div><br><br>
+
 {% if posts %}
 Все посты: ({{ posts | length }}) <a href="{% url 'user_posts'  %}">Показать</a>
 {% else %}

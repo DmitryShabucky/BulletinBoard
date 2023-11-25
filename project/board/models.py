@@ -1,9 +1,10 @@
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 
 from positions import POSITIONS
+
 
 
 class Category(models.Model):
