@@ -8,41 +8,44 @@ Post
 <br>
 <h5>Объявление:</h5><a href="{% url 'post' post.pk %}">{{ post.title }}</a><br><br>
 <a>{{ post.content|safe|truncatewords:20 }}</a>
+<div>
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+</div>
+<form method="POST" action="" >
+  {% csrf_token %}
+  {{ form.as_p }}
+<button type="submit" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Оставить отклик</button>
+  </form>
 {% if replies %}
 
-<ul>
-<a>Всего откликов: ({{ replies.count }})</a>
+<ul><br>
+
+    <button style="display: block; margin: 0 auto; align-items: center;" onclick="location.href='{% url 'posts' %}'" >Назад</button><br><br>
  <hr>
 {% for reply in replies %}
-<li>
-Дата: {{ reply.created|date:'m d Y' }}<br>
-Автор: {{ reply.user.username }}<br>
-{{reply.text}}<br>
+<li style="text-align: left;">
+Дата: {{ reply.created|date:'m.d.Y' }}<br>
+Автор: {{ reply.user.username }}<br><br>
+{{reply.text}}<br><br>
+ {% if reply.status == False %}
+ <h7>(Проходит модерацию) - </h7>
+    <a style="color:grey" href="{% url 'user_reply_update' reply.id 'public' %}">Опубликовать</a> /
+    <a style="color: red" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
+ {% endif %}
  </li>
  <br>
 {% endfor%}
  </ul>
-<button onclick="history.back()">Назад</button><br><br>
-{% if page_obj.has_previous %}
-       <a href="?page=1">1</a>
-       {% if page_obj.previous_page_number != 1 %}
-           ...
-           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
-       {% endif %}
-   {% endif %}
-
-   {{ page_obj.number }}
-
-   {% if page_obj.has_next %}
-       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
-       {% if paginator.num_pages != page_obj.next_page_number %}
-           ...
-           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-       {% endif %}
-   {% endif %}
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'reply_list' post.id %}'" >Наверх</button><br><br>
 {% else %}
-<h3>Откликов нет</h3>
-<button onclick="history.back()">Назад</button><br><br>
+<br><h3>Откликов нет</h3><br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'posts' %}'" >Назад</button><br><br>
 {% endif%}
 
 {% endblock content %}

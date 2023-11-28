@@ -10,20 +10,18 @@ Post
 
 <h5>Объявление</h5>
 <h7 align="left">Категория: {{ post.category}}</h7><br>
-<h7 align="left">Дата публикации: {{ post.created | date:'d m Y' }}</h7><br>
+<h7 align="left">Дата публикации: {{ post.created | date:'d.m.Y' }}</h7><br>
 <h7 align="left">Автор: {{ post.author }}</h7><br>
 <br>
 <h7>{{ post.title }}</h7><br><br>
 <a>{{ post.content | safe }}</a>
 <br>
-
-<form method="POST" action="" >
-  {% csrf_token %}
-  {{ form.as_p }}
-<button type="submit" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Оставить отклик</button>
-<a href="{% url 'reply_list' post.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Все отклики ({{ post.replies.all.count }})</a>
-  </form>
-<br>
-<button onclick="history.back()">Назад</button>
+{% if is_authenticated %}
+<a href="{% url 'reply_list' post.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ post.replies.all.count }})</a>
+{% else %}
+<a href="{% url 'login_warning' %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ post.replies.all.count }})</a>
+{% endif%}
+<br><br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'posts' %}'" >Назад</button><br><br>
 <br><br>
 {% endblock content %}

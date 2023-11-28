@@ -33,12 +33,13 @@ Posts
         <a> Автор: {{ pst.author.username }}</a><br><br>
         <a class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br>
         <a>{{ pst.content|safe|truncatewords:20 }}</a>
-{% if is_authenticated %}
 
+{% if is_authenticated %}
 <a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
 {% else %}
 <a href="{% url 'login_warning' %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
 {% endif%}
+
 <hr>
 {%endfor%}
 <br>
@@ -46,4 +47,5 @@ Posts
 <h2>Объявлений не найдено</h2>
 {% endif %}
 
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'posts' %}'" >Наверх</button><br><br>
 {% endblock content %}

@@ -1,0 +1,35 @@
+{% extends "default.html" %}
+
+{% block content %}
+<br>
+<h3>Отклики на объявления</h3>
+<hr>
+
+{% if new_replies %}
+<h4 align="left">Новые</h4>
+{% for post in user_posts %}
+
+{% if post.replies.all.exists %}
+<li style="text-align: left;">
+    {{ post.title}} ({{ post.replies.count }})
+    <a href="{% url 'user_reply_new' post.id %}" class="btn btn-dark btn-sm">Читать</a><br>
+{% endif %}
+{% endfor %}
+    </li>
+{% endif %}
+<hr>
+
+<h4 align="left">Все отклики</h4>
+{% for post in user_posts %}
+{% if post.replies.all.exists %}
+<li style="text-align: left;">
+    {{ post.title}} ({{ post.replies.all.count }})
+    <a href="{% url 'user_reply_new' post.pk  %}" class="btn btn-dark btn-sm">Читать</a><br>
+{% endif %}
+{% endfor %}
+    </li>
+
+<hr>
+<br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'profile' %}'" >Назад</button><br><br>
+{% endblock %}

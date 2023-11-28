@@ -31,6 +31,11 @@
                 <li class="nav-item">
                     <a class="nav-link" style="align-items: flex-end" href="/accounts/logout">Выйти</a>
                 </li>
+                {% if new_replies %}
+                <li class="nav-item">
+                    <a class="nav-link" style="align-items: flex-end; color: yellow" href="{% url 'user_replies' %}">Новые отклики ({{ new_replies.all.count }})</a>
+                </li>
+                {% endif %}
                 {% else %}
                     <li class="nav-item">
                     <a class="nav-link" style="align-items: flex-end" href="/accounts/login">Зарегестрироваться / Войти</a>

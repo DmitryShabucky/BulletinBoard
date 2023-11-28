@@ -18,18 +18,11 @@ from .models import Post, Reply, Category
 from .forms import PostForm, ReplyForm
 
 
-# class IndexView(LoginRequiredMixin, TemplateView):
-#     template_name = 'protect/index.html'
-
-# def get_context_data(self, **kwargs):
-#     context = super().get_context_data(**kwargs)
-#     context['is_not_author']= not self.request.protect.groups.filter(name= 'author').exists()
-#     return context
-
 class AuthenticationContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
+        context['new_replies'] = Reply.objects.filter(post__author=self.request.user, status=False)
         return context
 
 
@@ -44,12 +37,50 @@ class PostList(AuthenticationContextMixin, ListView):
         context['categories'] = Category.objects.all()
         return context
 
+class PostDetail(AuthenticationContextMixin, DetailView):
 
-class ReplyList(AuthenticationContextMixin, ListView):
+    model = Post
+    template_name = 'posts/post.html'
+    context_object_name = 'post'
+
+
+class ReplyList(AuthenticationContextMixin, ListView, FormMixin):
+    form_class = ReplyForm
     model = Reply
     template_name = 'reply/reply_list.html'
     context_object_name = 'replies'
-    paginate_by = 10
+
+    def post(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, id=kwargs['pk'])
+        form = self.get_form()
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.post = post
+            reply.user = request.user
+            reply.save()
+            messages.success(request, 'Отклик оставлен!')
+            post_url = request.build_absolute_uri(reverse('posts'))
+
+            html_content = render_to_string(
+                'reply/reply_email.html',
+                {
+                    'post': post,
+                    'user': reply.user,
+                    'url': post_url,
+                }
+            )
+            msg = EmailMultiAlternatives(
+                subject=f'{post.title}',
+                body=f'Пользователь {request.user} Оставил отклик: {reply.text[:15:].title()}... Читать отклик {post_url}',
+                from_email=os.getenv('DEFAULT_FROM_EMAIL'),
+                to=[post.author.email],
+            )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return redirect('reply_list', post.id)
+
+        else:
+            return ReplyForm
 
     def get_queryset(self):
         self.post = get_object_or_404(Post, id=self.kwargs['pk'])
@@ -64,49 +95,6 @@ class ReplyList(AuthenticationContextMixin, ListView):
         self.post = get_object_or_404(Post, id=self.kwargs['pk'])
         context['post'] = self.post
         return context
-
-
-class PostDetail(AuthenticationContextMixin, FormMixin, DetailView):
-    form_class = ReplyForm
-    model = Post
-    template_name = 'posts/post.html'
-    context_object_name = 'post'
-
-    def post(self, request, *args, **kwargs):
-        post = get_object_or_404(Post, id=kwargs['pk'])
-        form = self.get_form()
-        if form.is_valid():
-            reply = form.save(commit=False)
-            reply.post = post
-            reply.user = request.user
-            reply.save()
-            post_url = request.build_absolute_uri(reverse('main'))
-            # send_mail(
-            #     subject=f'{post.title}',
-            #     message=f'Пользователь {request.user} Оставил отклик: {reply.text[:15:].title()}...\n Читать отклик {post_url}',
-            #     from_email='dmz.sh@yandex.ru',
-            #     recipient_list=[post.author.email],
-            # )
-            html_content = render_to_string(
-                'reply/reply_email.html',
-                {
-                    'post': post,
-                    'user': reply.user,
-                    'url': post_url,
-                }
-            )
-            msg = EmailMultiAlternatives(
-                subject=f'{post.title}',
-                body=f'Пользователь {request.user} Оставил отклик: {reply.text[:15:].title()}...\n Читать отклик {post_url}',
-                from_email=os.getenv('DEFAULT_FROM_EMAIL'),
-                to=[post.author.email],
-            )
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
-            return redirect('post', post.id)
-
-        else:
-            return ReplyForm
 
 
 class PostCreate(AuthenticationContextMixin,CreateView, PermissionRequiredMixin):

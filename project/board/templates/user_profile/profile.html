@@ -6,11 +6,27 @@
 <div style="display: flex; align-items: center;">
   <h5 style="margin-right: 10px;">Персональные данные:</h5>
   <a href="{% url 'user_detail' user.pk  %}" class="btn btn-dark btn-sm">Смотреть</a>
-</div><br><br>
+</div><br>
 
 {% if posts %}
-Все посты: ({{ posts | length }}) <a href="{% url 'user_posts'  %}">Показать</a>
+<div style="display: flex; align-items: center;">
+  <h5 style="margin-right: 10px;">Объявления: ({{ posts | length }})</h5>
+  <a href="{% url 'user_posts'  %}" class="btn btn-dark btn-sm">Смотреть</a>
+  </div><br>
 {% else %}
 Вы еще не оставили ни одного объявления.
 {% endif %}
+
+{% if replies %}
+<div style="display: flex; align-items: center;">
+  <h5 style="margin-right: 10px;">Отклики на Ваши объявления: ({{ replies | length }})</h5>
+    {% if new_replies %}
+    <h5 style="margin-right: 10px;"> - Новых: ({{ new_replies | length }})</h5>
+    {% endif %}
+    <h5>
+  <a href="{% url 'user_replies'  %}" class="btn btn-dark btn-sm">Смотреть</a>
+  </div><br>
+{% endif %}
+
+
 {% endblock %}

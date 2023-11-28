@@ -8,8 +8,8 @@
     {% for pst in posts %}
 
         <a>{{ pst.category.get_name_display }}</a><br>
-        <a>{{ pst.created|date:'d m Y'}}</a><br><br>
-        <a>{{ pst.title }}</a>
+        <a>{{ pst.created|date:'d.m.Y'}}</a><br><br>
+        <a class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br><br>
         <a class="nav-link" href="">{{ pst.content|safe|truncatewords:20 }}</a>
 <a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
 <hr>
