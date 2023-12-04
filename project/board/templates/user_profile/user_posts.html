@@ -4,19 +4,52 @@
 <br>
 {% if posts %}
 
-<h6>Всего постов ({{ posts|length }})</h6>
+<h3>Ваши объявления ({{ posts|length }})</h3>
+
+<div>
+        {% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+</div>
+<hr>
     {% for pst in posts %}
 
-        <a>{{ pst.category.get_name_display }}</a><br>
-        <a>{{ pst.created|date:'d.m.Y'}}</a><br><br>
-        <a class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br><br>
+        <p style="color: blue; display: inline;">Категория:</p> <span style="display: inline;">{{ pst.category.get_name_display }}</span><br>
+        <p style="color: blue; display: inline;">Дата публикации:</p> <span style="display: inline;">{{ pst.created|date:'d.m.Y'}}</span><br><br>
+        <a> {{ pst.title }}</a><br><br>
         <a class="nav-link" href="">{{ pst.content|safe|truncatewords:20 }}</a>
-<a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
+
+{% if pst.author.id == request.user.id %}
+<div>
+    <a href="{% url 'post' pst.pk %}" class="btn btn-success  btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Открыть </a>
+    <a href="{% url 'post_edit' pst.pk %}" class="btn btn-warning  btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Изменить </a>
+    <a href="{% url 'post_delete' pst.pk %}" class="btn btn-danger btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Удалить </a>
+</div>
+{% endif %}
+<br>
+<a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a><br>
 <hr>
 {% endfor %}
+
 {% else %}
-<a>У Вас нет постов</a><br><br>
-<button onclick="history.back()">Назад</button><br><br>
+
+<div>
+        {% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
 {% endif %}
-<button onclick="history.back()">Назад</button><br><br>
+</div>
+<br>
+<h4>У Вас нет постов</h4><br>
+
+<hr>
+{% endif %}
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'profile' %}'" >Назад</button><br><br>
 {% endblock %}

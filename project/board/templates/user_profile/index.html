@@ -5,3 +5,14 @@
 <br><br>
 <button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'user_detail' request.user.id %}'" >Назад</button><br><br>
 {% endblock %}
+<button onclick="history.back()">Назад</button><br><br>
+
+<div>
+        {% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+</div>

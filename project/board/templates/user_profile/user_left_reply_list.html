@@ -1,0 +1,45 @@
+{% extends "default.html" %}
+
+{% block content %}
+
+<br><br>
+<h3>Ваши отклики</h3><br>
+
+{% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% for post in posts %}
+<a style="color: blue" class="nav-link" href="/post/{{post.pk}}">{{ post.title }}</a><br>
+<hr>
+{% for reply in replies %}
+{% if reply.post.id == post.id%}
+<ul style="text-align: left;">
+    <p style="color: blue; display: inline;">Дата:</p> <span style="display: inline;">{{ reply.created|date:'m.d.Y' }}</span><br><br>
+{{reply.text}}<br><br>
+    <a style="color: red; text-align: left" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
+  </ul>
+<hr>
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+
+
+
+
+
+
+
+
+{% if replies.count > 5 %}
+<br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{{ request.path }}'">Наверх</button>
+<br>
+{% endif %}
+
+{% endblock content %}

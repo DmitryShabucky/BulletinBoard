@@ -15,11 +15,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
         <a class="navbar-brand" href="/">ДОСКА ОБЪЯВЛЕНИЙ</a>
-        <a class="navbar-brand" href="/posts/">Все объявления</a>
+        <a class="navbar-brand" href="/">Все объявления</a>
 
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ">
-               {% if is_authenticated %}
+               {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="/post/create/">Создать объявление</a>
                 </li>

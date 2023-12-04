@@ -8,20 +8,33 @@ Post
 
 <br>
 
-<h5>Объявление</h5>
-<h7 align="left">Категория: {{ post.category}}</h7><br>
-<h7 align="left">Дата публикации: {{ post.created | date:'d.m.Y' }}</h7><br>
-<h7 align="left">Автор: {{ post.author }}</h7><br>
+<h3>Объявление</h3>
+<hr>
+
+<div>
+        {% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+</div>
+
+<p style="color: blue; display: inline;">Категория:</p> <span style="display: inline;">{{ post.category.get_name_display }}</span><br>
+<p style="color: blue; display: inline;">Дата публикации:</p> <span style="display: inline;">{{ post.created|date:'d.m.Y'}}</span><br>
+<p style="color: blue; display: inline;"> Автор: </p> <span style="display: inline;">{{ post.author.username }}</span><br><br>
 <br>
 <h7>{{ post.title }}</h7><br><br>
 <a>{{ post.content | safe }}</a>
 <br>
-{% if is_authenticated %}
+{% if user.is_authenticated %}
 <a href="{% url 'reply_list' post.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ post.replies.all.count }})</a>
 {% else %}
 <a href="{% url 'login_warning' %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ post.replies.all.count }})</a>
 {% endif%}
 <br><br>
-<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'posts' %}'" >Назад</button><br><br>
+<hr>
+<button onclick="history.back(2)">Назад</button><br><br>
 <br><br>
 {% endblock content %}

@@ -1,8 +1,7 @@
 {% extends 'default.html' %}
 
 {% block content %}
-<br>
-<h1>Новое объявление</h1>
+<h1>Изменмить объявление</h1>
 <hr>
 <form action="" method="post">
     {% csrf_token %}
@@ -10,6 +9,7 @@
     {{ form.as_p }}
     <input type="submit" value="Сохранить" />
 </form>
-<hr>
+<br>
 <button onclick="history.back()">Назад</button><br><br>
+
 {% endblock content %}

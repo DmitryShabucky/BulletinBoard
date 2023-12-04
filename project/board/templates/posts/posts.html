@@ -28,13 +28,13 @@ Posts
 
 {% for pst in posts %}
 
-        <a> Категория: {{ pst.category.get_name_display }}</a><br>
-        <a> Дата публикации: {{ pst.created|date:'d.m.Y'}}</a><br>
-        <a> Автор: {{ pst.author.username }}</a><br><br>
-        <a class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br>
+        <p style="color: blue; display: inline;">Категория:</p> <span style="display: inline;">{{ pst.category.get_name_display }}</span><br>
+        <p style="color: blue; display: inline;">Дата публикации:</p> <span style="display: inline;">{{ pst.created|date:'d.m.Y'}}</span><br>
+        <p style="color: blue; display: inline;"> Автор: </p> <span style="display: inline;">{{ pst.author.username }}</span><br><br>
+        <a style="color: black" class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br>
         <a>{{ pst.content|safe|truncatewords:20 }}</a>
 
-{% if is_authenticated %}
+{% if user.is_authenticated %}
 <a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
 {% else %}
 <a href="{% url 'login_warning' %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>

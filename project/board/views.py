@@ -1,7 +1,6 @@
-# from django.contrib.auth.mixins import LoginRequiredMixin
 import os
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.shortcuts import redirect, get_object_or_404, render
@@ -18,15 +17,15 @@ from .models import Post, Reply, Category
 from .forms import PostForm, ReplyForm
 
 
-class AuthenticationContextMixin:
+class NewReplyContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_authenticated'] = User.objects.filter(id=self.request.user.id).exists()
-        context['new_replies'] = Reply.objects.filter(post__author=self.request.user, status=False)
+        if self.request.user.is_authenticated:
+            context['new_replies'] = Reply.objects.filter(post__author=self.request.user, status=False)
         return context
 
 
-class PostList(AuthenticationContextMixin, ListView):
+class PostList(NewReplyContextMixin, ListView):
     model = Post
     ordering = '-created'
     template_name = 'posts/posts.html'
@@ -37,14 +36,50 @@ class PostList(AuthenticationContextMixin, ListView):
         context['categories'] = Category.objects.all()
         return context
 
-class PostDetail(AuthenticationContextMixin, DetailView):
+class PostDetail(NewReplyContextMixin, DetailView):
 
     model = Post
     template_name = 'posts/post.html'
     context_object_name = 'post'
 
+class PostCreate(NewReplyContextMixin,CreateView, PermissionRequiredMixin):
+    permission_required = ('board.add_post',)
+    permission_denied_message = 'Для создания объявления необходимо пройти регистрацию на портале.'
+    model = Post
+    form_class = PostForm
+    template_name = 'posts/post_create.html'
 
-class ReplyList(AuthenticationContextMixin, ListView, FormMixin):
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Объявление создано')
+        return super().form_valid(form)
+
+class PostEdit(UpdateView):
+
+    form_class = PostForm
+    model = Post
+    template_name = 'posts/post_edit.html'
+
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Объявление изменено')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('user_posts')
+
+class PostDelete(DeleteView):
+
+    model = Post
+    template_name = 'posts/post_delete.html'
+    success_url = reverse_lazy('user_posts')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Объявление Удалено')
+        return super().form_valid(form)
+
+
+class ReplyList(NewReplyContextMixin, ListView, FormMixin):
     form_class = ReplyForm
     model = Reply
     template_name = 'reply/reply_list.html'
@@ -57,37 +92,38 @@ class ReplyList(AuthenticationContextMixin, ListView, FormMixin):
             reply = form.save(commit=False)
             reply.post = post
             reply.user = request.user
+            if post.author.id == reply.user.id:
+                reply.status=True
             reply.save()
             messages.success(request, 'Отклик оставлен!')
             post_url = request.build_absolute_uri(reverse('posts'))
 
-            html_content = render_to_string(
-                'reply/reply_email.html',
-                {
-                    'post': post,
-                    'user': reply.user,
-                    'url': post_url,
-                }
-            )
-            msg = EmailMultiAlternatives(
-                subject=f'{post.title}',
-                body=f'Пользователь {request.user} Оставил отклик: {reply.text[:15:].title()}... Читать отклик {post_url}',
-                from_email=os.getenv('DEFAULT_FROM_EMAIL'),
-                to=[post.author.email],
-            )
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
-            return redirect('reply_list', post.id)
+            if self.request.user.id != post.author.id:
+                html_content = render_to_string(
+                    'reply/reply_email.html',
+                    {
+                        'post': post,
+                        'user': reply.user,
+                        'url': post_url,
+                    }
+                )
 
+                msg = EmailMultiAlternatives(
+                    subject=f'{post.title}',
+                    body=f'Пользователь {request.user} Оставил отклик: {reply.text[:15:].title()}... Читать отклик {post_url}',
+                    from_email=os.getenv('DEFAULT_FROM_EMAIL'),
+                    to=[post.author.email],
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+                return redirect('reply_list', post.id)
+            return redirect('reply_list', post.id)
         else:
-            return ReplyForm
+            self.form_invalid(form)
 
     def get_queryset(self):
         self.post = get_object_or_404(Post, id=self.kwargs['pk'])
-        queryset = Reply.objects.filter(Q(post=self.post, status=True) |
-                                        Q(post=self.post, user=self.request.user, status=False) |
-                                        Q(post=self.post, post__author=self.request.user, status=False)).order_by(
-            '-created')
+        queryset = Reply.objects.filter(Q(post=self.post, status=True)|Q(post=self.post, user=self.request.user, status=False)|Q(post=self.post, post__author=self.request.user, status=False)).order_by('-created')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -97,19 +133,9 @@ class ReplyList(AuthenticationContextMixin, ListView, FormMixin):
         return context
 
 
-class PostCreate(AuthenticationContextMixin,CreateView, PermissionRequiredMixin):
-    permission_required = ('board.add_post',)
-    permission_denied_message = 'Для создания объявления необходимо пройти регистрацию на портале.'
-    model = Post
-    form_class = PostForm
-    template_name = 'posts/post_create.html'
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
 
-class CategoryList(AuthenticationContextMixin, ListView):
+class CategoryList(NewReplyContextMixin, ListView):
     model = Category
     template_name = 'category/category.html'
     context_object_name = 'category_list'
@@ -127,26 +153,9 @@ class CategoryList(AuthenticationContextMixin, ListView):
         return context
 
 
-class PostDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = 'board.delete_post'
-    model = Post
-    template_name = 'posts/post_delete.html'
-    success_url = reverse_lazy('')
 
 
-class PostEdit(PermissionRequiredMixin, UpdateView):
-    permission_required = ('board.edit_post')
-    ...
 
-
-class ReplyEdit(PermissionRequiredMixin, UpdateView):
-    permission_required = ('board.edit_rebly')
-    ...
-
-
-class ReplyDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = ('board.delete_reply')
-    ...
 class LoginWarning(TemplateView):
 
     template_name = 'login_warning.html'

@@ -35,15 +35,17 @@ Categories
 <hr>
 {% for pst in posts %}
 
-        <a>Дата публикации: {{ pst.created|date:'d m Y'}}</a><br>
-        <a>Автор: {{ pst.author.username }}</a><br><br>
-        <a>{{ pst.title }}</a><br><br>
+        <p style="color: blue; display: inline;">Дата публикации:</p> <span style="display: inline;">{{ pst.created|date:'d.m.Y'}}</span><br>
+        <p style="color: blue; display: inline;"> Автор: </p> <span style="display: inline;">{{ pst.author.username }}</span><br><br>
+        <a style="color: blue" class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br>
         <a>{{ pst.content|safe|truncatewords:20 }}</a>
 <a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
 
 <hr>
 {%endfor%}
-
+{% if posts.count >= 3 %}
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'posts' %}'" >Наверх</button><br><br>
+{% endif %}
 {% else %}
 <br><br><br>
 <h3>В данной категории статей нет</h3>

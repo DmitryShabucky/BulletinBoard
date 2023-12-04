@@ -3,7 +3,15 @@
 {% block content %}
 <br>
 <h1>Изменить данные</h1>
-<br>
+
+{% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <hr>
 <br>
 <form action="" method="post" style="text-align: left">

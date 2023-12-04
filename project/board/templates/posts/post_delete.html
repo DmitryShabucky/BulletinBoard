@@ -2,14 +2,17 @@
 
 {% block content %}
 <br>
-<h1>Новое объявление</h1>
+<h1>Удаление объявления</h1>
 <hr>
+{{ post.title }}<br><br>
+{{ post.content|safe }}<br>
 <form action="" method="post">
     {% csrf_token %}
-    {{ form.media }}
-    {{ form.as_p }}
-    <input type="submit" value="Сохранить" />
+
+    <input style="color:red" type="submit" value="Удалить" />
 </form>
+<br>
 <hr>
 <button onclick="history.back()">Назад</button><br><br>
+
 {% endblock content %}

@@ -2,31 +2,48 @@
 
 {% block content %}
 <br>
+   {% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}<br>
 <h2 align="center">Личный кабинет: {{request.user.username}}</h2><br>
-<div style="display: flex; align-items: center;">
-  <h5 style="margin-right: 10px;">Персональные данные:</h5>
-  <a href="{% url 'user_detail' user.pk  %}" class="btn btn-dark btn-sm">Смотреть</a>
-</div><br>
+<hr>
 
 {% if posts %}
 <div style="display: flex; align-items: center;">
-  <h5 style="margin-right: 10px;">Объявления: ({{ posts | length }})</h5>
-  <a href="{% url 'user_posts'  %}" class="btn btn-dark btn-sm">Смотреть</a>
+  <h5 style="margin-right: 10px; color: blue">Ваши объявления::</h5>
+    <h5> ({{ posts | length }})</h5>
+  <a href="{% url 'user_posts'  %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
   </div><br>
 {% else %}
-Вы еще не оставили ни одного объявления.
+<h3>Вы еще не оставили ни одного объявления.</h3>
+<br>
+<a href="{% url 'post_create'  %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Создать</a>
+<hr>
 {% endif %}
 
 {% if replies %}
 <div style="display: flex; align-items: center;">
-  <h5 style="margin-right: 10px;">Отклики на Ваши объявления: ({{ replies | length }})</h5>
+  <h5 style="margin-right: 10px; color: blue">Отклики на Ваши объявления::</h5><h5> ({{ replies | length }})  </h5>
     {% if new_replies %}
     <h5 style="margin-right: 10px;"> - Новых: ({{ new_replies | length }})</h5>
     {% endif %}
     <h5>
-  <a href="{% url 'user_replies'  %}" class="btn btn-dark btn-sm">Смотреть</a>
+  <a href="{% url 'user_replies'  %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
   </div><br>
 {% endif %}
-
+{% if user_replies %}
+<div style="display: flex; align-items: center;">
+    <h5 style="margin-right: 10px; color: blue">Ваши отклики:</h5><h5> ({{ user_replies | length }}) </h5>
+  <a href="{% url 'user_replies_left'   %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
+</div><br>
+{% endif %}
+<div style="display: flex; align-items: center;">
+  <h5 style="margin-right: 10px; color: blue">Персональные данные:</h5>
+  <a href="{% url 'user_detail' user.pk  %}" class="btn btn-dark btn-sm">Смотреть</a>
+</div><br>
 
 {% endblock %}

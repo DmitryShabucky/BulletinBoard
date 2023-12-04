@@ -1,7 +1,55 @@
 {% extends "default.html" %}
 
 {% block content %}
-<hr>
+
 <br><br>
-<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'user_detail' request.user.id %}'" >Назад</button><br><br>
-{% endblock %}
+{% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h3>Отклики на Ваше объявление</h3><br>
+<a style="color: blue" class="nav-link" href="/post/{{post.pk}}">{{ post.title }}</a><br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'user_replies'  %}'" >Назад</button><br>
+<hr
+>
+{% if replies %}
+{% for reply in replies %}
+{% if reply.status %}
+<ul style="text-align: left;">
+<p style="color: blue; display: inline;">Автор:</p> <span style="display: inline;">{{ reply.user.username }}</span><br>
+    <p style="color: blue; display: inline;">Дата:</p> <span style="display: inline;">{{ reply.created|date:'m.d.Y' }}</span><br><br>
+{{reply.text}}<br><br>
+
+{% if user.id == reply.user.id %}
+    <a>Ваш отклик - </a>
+    <a style="color: red; text-align: left" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
+     {% endif %}
+    </ul>
+<hr>
+{% else %}
+<ul style="text-align: left;">
+<p style="color: blue; display: inline;">Автор:</p> <span style="display: inline;">{{ reply.user.username }}</span><br>
+    <p style="color: blue; display: inline;">Дата:</p> <span style="display: inline;">{{ reply.created|date:'m.d.Y' }}</span><br><br>
+{{reply.text}}<br><br>
+    <a style="color:grey" href="{% url 'user_reply_update' reply.id 'public' %}">Опубликовать</a> /
+    <a style="color: red" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
+  </ul>
+<hr>
+{% endif %}
+<br>
+{% endfor %}
+{% else %}
+<h2>Новых откликов больше нет</h2>
+{% endif %}
+
+{% if replies.count > 5 %}
+<br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{{ request.path }}'">Наверх</button>
+<br>
+{% endif %}
+
+{% endblock content %}

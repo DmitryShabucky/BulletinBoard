@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-$@ach87fvz85olwm*ctq8!h3nnj*c+=g-tw5wm6*b#7)&5y%ts
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
+LANGUAGE_CODE = 'ru'
 
 # Application definition
 
@@ -221,6 +222,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+ACCOUNT_ADAPTER = 'board.adapters.CustomAccountAdapter'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True

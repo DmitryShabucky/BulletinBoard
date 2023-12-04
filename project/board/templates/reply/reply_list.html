@@ -6,11 +6,15 @@ Post
 
 {% block content %}
 <br>
-<h5>Объявление:</h5><a href="{% url 'post' post.pk %}">{{ post.title }}</a><br><br>
+<h5>Объявление:</h5>
+        <p style="color: blue; display: inline;">Категория:</p> <span style="display: inline;">{{ post.category.get_name_display }}</span><br>
+        <p style="color: blue; display: inline;">Дата публикации:</p> <span style="display: inline;">{{ post.created|date:'d.m.Y'}}</span><br>
+        <p style="color: blue; display: inline;"> Автор: </p> <span style="display: inline;">{{ post.author.username }}</span><br><br>
+<a href="{% url 'post' post.pk %}">{{ post.title }}</a><br><br>
 <a>{{ post.content|safe|truncatewords:20 }}</a>
 <div>
         {% if messages %}
-    <ul class="messages">
+    <ul class="messages" style="color:green">
         {% for message in messages %}
             <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
         {% endfor %}
@@ -29,16 +33,19 @@ Post
     <button style="display: block; margin: 0 auto; align-items: center;" onclick="location.href='{% url 'posts' %}'" >Назад</button><br><br>
  <hr>
 {% for reply in replies %}
-<li style="text-align: left;">
-Дата: {{ reply.created|date:'m.d.Y' }}<br>
-Автор: {{ reply.user.username }}<br><br>
+<ol style="text-align: left;">
+    <p style="color: blue; display: inline;">Автор:</p> <span style="display: inline;">{{ reply.user.username }}</span><br>
+    <p style="color: blue; display: inline;">Дата:</p> <span style="display: inline;">{{ reply.created|date:'m.d.Y' }}</span><br><br>
 {{reply.text}}<br><br>
  {% if reply.status == False %}
- <h7>(Проходит модерацию) - </h7>
-    <a style="color:grey" href="{% url 'user_reply_update' reply.id 'public' %}">Опубликовать</a> /
-    <a style="color: red" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
+    <p style="color: red;">(Проходит модерацию)</p>
  {% endif %}
- </li>
+    {% if user.id == reply.user.id %}
+    <a>Ваш отклик - </a>
+    <a style="color: red" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
+     {% endif %}
+ </ol>
+    <hr>
  <br>
 {% endfor%}
  </ul>
