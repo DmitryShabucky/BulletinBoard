@@ -1,0 +1,94 @@
+{% extends "account/base_manage_email.html" %}
+{% load allauth i18n %}
+{% block head_title %}
+    {% trans "Почта" %}
+{% endblock head_title %}
+{% block content %}
+    {% element h1 %}
+        {% trans "Электронная почта" %}
+    {% endelement %}
+    {% if emailaddresses %}
+        <p>{% trans 'Список Ваших адресов:' %}</p>
+        {% url 'account_email' as email_url %}
+        {% element form form=form action=email_url method="post" %}
+            {% slot body %}
+                {% csrf_token %}
+                {% for radio in emailaddress_radios %}
+                    {% with emailaddress=radio.emailaddress %}
+                        {% element field type="radio" checked=radio.checked name="email" value=emailaddress.email id=radio.id %}
+                            {% slot label %}
+                                {{ emailaddress.email }}
+                                {% if emailaddress.verified %}
+                                    {% element badge tags="success,email,verified" %}
+                                        {% translate "Подтвержден" %}
+                                    {% endelement %}
+                                {% else %}
+                                    {% element badge tags="warning,email,unverified" %}
+                                        {% translate "Не подтвержден" %}
+                                    {% endelement %}
+                                {% endif %}
+                                {% if emailaddress.primary %}
+                                    {% element badge tags="email,primary" %}
+                                        {% translate "Основной" %}
+                                    {% endelement %}
+                                {% endif %}
+                            {% endslot %}
+                        {% endelement %}
+                    {% endwith %}
+                {% endfor %}
+            {% endslot %}
+            {% slot actions %}
+                {% element button type="submit" name="action_primary" %}
+                    {% trans 'Сделать Основным' %}
+                {% endelement %}
+                {% element button tags="secondary" type="submit" name="action_send" %}
+                    {% trans 'Переотослать запрос подтверждения' %}
+                {% endelement %}
+                {% element button tags="danger,delete" type="submit" name="action_remove" %}
+                    {% trans 'Удалить' %}
+                {% endelement %}
+            {% endslot %}
+        {% endelement %}
+    {% else %}
+        {% include "account/snippets/warn_no_email.html" %}
+    {% endif %}
+    {% if can_add_email %}
+        {% element h2 %}
+            {% trans "Добавить" %}
+        {% endelement %}
+        {% url 'account_email' as action_url %}
+        {% element form form=form method="post" action=action_url %}
+            Hoi bef bod
+            {% slot body %}
+                {% csrf_token %}
+                {% element fields form=form %}
+                {% endelement %}
+            {% endslot %}
+            befac
+            {% slot actions %}
+                {% element button name="action_add" type="submit" %}
+                    {% trans "Добавить" %}
+                {% endelement %}
+            {% endslot %}
+        {% endelement %}
+    {% endif %}
+{% endblock content %}
+{% block extra_body %}
+    <script type="text/javascript">
+(function() {
+  var message = "{% trans 'Вы действительно хотите удалить выделенный адрес?' %}";
+  var actions = document.getElementsByName('action_remove');
+  if (actions.length) {
+    actions[0].addEventListener("click", function(e) {
+      if (! confirm(message)) {
+        e.preventDefault();
+      }
+    });
+  }
+})();
+    </script>
+<br>
+<hr>
+<br>
+<button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'user_edit' request.user.id %}'" >Назад</button><br><br>
+{% endblock extra_body %}

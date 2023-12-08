@@ -1,5 +1,4 @@
 from django import forms
-from allauth.account.forms import EmailVerificationForm
 from django.contrib.auth.models import User
 
 
@@ -18,14 +17,3 @@ class UserForm(forms.ModelForm):
             'last_name': "Фамилия",
         }
 
-
-
-class EmailVerificationForm(forms.ModelForm):
-
-    code = forms.CharField(max_length=4)
-    def clean_code(self):
-        code = self.cleaned_data['code']
-        # Add your verification logic here, e.g., comparing the code with the one stored in the database
-        if code != stored_verification_code:
-            raise forms.ValidationError("Invalid verification code")
-        return code

@@ -1,18 +1,16 @@
-import os
-
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import TemplateView, DetailView, ListView, UpdateView
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from board.models import Post, Reply
+from board.models import Post, Reply, Category
 from board.views import NewReplyContextMixin, PostList, ReplyList
 from user_profile.forms import UserForm
+from project import settings
 
 
 class ProfileView(NewReplyContextMixin, TemplateView):
@@ -20,10 +18,12 @@ class ProfileView(NewReplyContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         context['posts'] = Post.objects.filter(author=self.request.user).order_by('-created')
         context['new_replies'] = Reply.objects.filter(post__author=self.request.user, status=False).order_by('-created')
         context['replies'] = Reply.objects.filter(post__author=self.request.user).order_by('-created')
         context['user_replies'] = Reply.objects.filter(user=self.request.user)
+        context['categories'] = user.categories.all()
         return context
 
 
@@ -96,7 +96,7 @@ class UserLeftRelpyList(UserReplyList):
 def reply_update_status(request, id, type):
     reply = get_object_or_404(Reply, id=id)
     post = reply.post
-    post_url = request.build_absolute_uri(reverse('posts'))
+    post_url = f'{settings.SITE_URL}/post/{post.id}'
     if type == 'public':
         reply.status_update()
         messages.success(request,'Отклик опубликован')
@@ -112,8 +112,8 @@ def reply_update_status(request, id, type):
 
         msg = EmailMultiAlternatives(
             subject=f'{post.title}',
-            body=f'Ваш отклик {reply.text[:15:].title()} прошел модерацию и был опубликован. Перейти на сайт {post_url}',
-            from_email=os.getenv('DEFAULT_FROM_EMAIL'),
+            body='',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=[reply.user.email],
         )
         msg.attach_alternative(html_content, "text/html")
@@ -136,8 +136,8 @@ def reply_update_status(request, id, type):
 
             msg = EmailMultiAlternatives(
                 subject=f'{post.title}',
-                body=f'Ваш отклик {reply.text[:15:].title()} не прошел модерацию и был удален. Перейти на сайт {post_url}',
-                from_email=os.getenv('DEFAULT_FROM_EMAIL'),
+                body=f'',
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[reply.user.email],
             )
             msg.attach_alternative(html_content, "text/html")
@@ -145,3 +145,16 @@ def reply_update_status(request, id, type):
             return  HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+class UserCategoryList(ListView):
+
+    model = Category
+    template_name = 'user_profile/user_category_list.html'
+    context_object_name = 'categories'
+
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = user.categories.all()
+        return queryset
+

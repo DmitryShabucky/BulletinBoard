@@ -1,13 +1,15 @@
 import os
-
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib.auth.models import User
 from django.core.mail import send_mail, EmailMultiAlternatives
-from django.shortcuts import redirect, get_object_or_404, render
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
+
+
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView,
 )
@@ -15,6 +17,7 @@ from django.views.generic.edit import FormMixin
 
 from .models import Post, Reply, Category
 from .forms import PostForm, ReplyForm
+from project import settings
 
 
 class NewReplyContextMixin:
@@ -96,7 +99,7 @@ class ReplyList(NewReplyContextMixin, ListView, FormMixin):
                 reply.status=True
             reply.save()
             messages.success(request, 'Отклик оставлен!')
-            post_url = request.build_absolute_uri(reverse('posts'))
+            post_url =f'{settings.SITE_URL}/post/{post.id}'
 
             if self.request.user.id != post.author.id:
                 html_content = render_to_string(
@@ -147,12 +150,24 @@ class CategoryList(NewReplyContextMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
         context['posts'] = Post.objects.filter(category=self.category)
         context['category'] = self.category
         context['categories'] = Category.objects.all()
+        context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
         return context
 
-
+@login_required
+def update_subscription(request, id, type):
+    category = get_object_or_404(Category, id=id)
+    if type == 'subscribe':
+        category.subscribers.add(request.user)
+        messages.success(request, f'Вы подписались на рассылку новостей категории "{category}"')
+        return  HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        category.subscribers.remove(request.user)
+        messages.success(request, f'Вы отписались от рассылки новостей категории "{category}"')
+        return  HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 

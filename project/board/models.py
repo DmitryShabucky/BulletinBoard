@@ -9,7 +9,7 @@ from positions import POSITIONS
 
 class Category(models.Model):
     name = models.CharField(max_length=20, choices=POSITIONS, unique=True, verbose_name='Категории')
-
+    subscribers = models.ManyToManyField(User, blank=True, related_name='categories')
     def __str__(self):
         return self.get_name_display()
 
@@ -27,6 +27,7 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post', args=[int(self.pk)])
+
 
 
 class Reply(models.Model):

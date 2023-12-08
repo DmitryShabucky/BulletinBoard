@@ -21,6 +21,7 @@ Post
     </ul>
 {% endif %}
 </div>
+
 <form method="POST" action="" >
   {% csrf_token %}
   {{ form.as_p }}
@@ -38,8 +39,13 @@ Post
     <p style="color: blue; display: inline;">Дата:</p> <span style="display: inline;">{{ reply.created|date:'m.d.Y' }}</span><br><br>
 {{reply.text}}<br><br>
  {% if reply.status == False %}
+        {% if post.author.id == user.id%}
+    <a style="color: red" href="{% url 'user_reply_new' post.id 'new' %}">Модерировать</a>
+
+        {% else %}
     <p style="color: red;">(Проходит модерацию)</p>
  {% endif %}
+    {% endif %}
     {% if user.id == reply.user.id %}
     <a>Ваш отклик - </a>
     <a style="color: red" href="{% url 'user_reply_update' reply.id 'delete' %}">Удалить</a>
@@ -51,7 +57,7 @@ Post
  </ul>
 <button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'reply_list' post.id %}'" >Наверх</button><br><br>
 {% else %}
-<br><h3>Откликов нет</h3><br>
+<br><h3>Откликов нет (возможно, проходят модерацию)</h3><br>
 <button style="display: block; margin: 0 auto;" onclick="location.href='{% url 'posts' %}'" >Назад</button><br><br>
 {% endif%}
 

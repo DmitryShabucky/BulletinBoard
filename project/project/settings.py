@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'ckeditor',
     'ckeditor_uploader',
-    'board',
+    'board.apps.BoardConfig',
     'user_profile',
     'allauth',
     'allauth.account',
@@ -66,6 +66,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'project.urls'
 
 SITE_ID = 1
+SITE_URL = 'http://127.0.0.1:8000'
 
 TEMPLATES = [
     {
@@ -222,7 +223,6 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_ADAPTER = 'board.adapters.CustomAccountAdapter'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True

@@ -1,0 +1,17 @@
+{% extends "default.html" %}
+
+{% block content %}
+<br>
+<h3>Ваши подписки</h3>
+<hr>
+{% for cat in categories %}
+<div style="display: flex; align-items: center;">
+    <h5 style="margin-right: 10px; color: blue">{{ cat.get_name_display }}</h5>
+  <a href="{% url 'category' cat.pk  %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
+</div><br>
+{% endfor %}
+
+<hr>
+<br>
+<button onclick="history.back()">Назад</button><br><br>
+{% endblock %}

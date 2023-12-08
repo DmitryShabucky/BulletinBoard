@@ -20,26 +20,52 @@ Categories
     }
 </style>
 
+
+
 {% if cat.id == category.id %}
 <a >{{ category.get_name_display }}</a>
 {% else %}
 <a href="{% url 'category' cat.id %}" class="round-link">{{ cat.get_name_display }}</a>
 {% endif %}
 {% endfor %}
+<br><br>
+<div>
+        {% if messages %}
+    <ul class="messages" style="color:green">
+        {% for message in messages %}
+            <h5 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+        {% endfor %}
+    </ul>
+{% endif %}
+</div>
+{% if user.is_authenticated %}
 
-<br>
+
+{% if is_not_subscriber %}
+<a href="{% url 'category_subscription' category.id 'subscribe' %}" class="btn btn-success  btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Подписаться</a>
+<a style="font-size: 22px;"> на рассылку новостей категории "{{ category.get_name_display }}"?</a>
+
+{% else %}
+<a href="{% url 'category_subscription' category.id 'unsubscribe' %}" class="btn btn-danger  btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отписаться</a>
+<a style="font-size: 22px;"> от рассылки новостей категории "{{ category.get_name_display }}"?</a>
+{% endif %}
+{% endif %}
 {% if posts %}
-<br>
 <h5>Количество статей: {{ posts|length }}</h5>
 
 <hr>
+
 {% for pst in posts %}
 
         <p style="color: blue; display: inline;">Дата публикации:</p> <span style="display: inline;">{{ pst.created|date:'d.m.Y'}}</span><br>
         <p style="color: blue; display: inline;"> Автор: </p> <span style="display: inline;">{{ pst.author.username }}</span><br><br>
         <a style="color: blue" class="nav-link" href="/post/{{pst.pk}}">{{ pst.title }}</a><br>
         <a>{{ pst.content|safe|truncatewords:20 }}</a>
+{% if user.is_authenticated %}
 <a href="{% url 'reply_list' pst.pk %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
+{% else %}
+<a href="{% url 'login_warning' %}" class="btn btn-dark btn-sm"><span class="icon"><i class="fa fa-comment-o"></i></span>Отклики ({{ pst.replies.all.count }})</a>
+{% endif%}
 
 <hr>
 {%endfor%}

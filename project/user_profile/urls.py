@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (UserPostList, ProfileView, UserDetail, UserEdit, UserReplyList, reply_update_status,
-                    UserNewReplyList, UserLeftRelpyList
+                    UserNewReplyList, UserLeftRelpyList,UserCategoryList
                     )
 
 urlpatterns = [
@@ -12,5 +12,6 @@ urlpatterns = [
     path('accounts/profile/replies/post/<int:pk>/<str:type>', UserNewReplyList.as_view(), name='user_reply_new'),
     path('accounts/profile/reply/<int:id>/<str:type>', reply_update_status, name='user_reply_update'),
     path('accounts/profile/user_posts/', UserPostList.as_view(), name='user_posts'),
+    path('accounts/profile/categories', UserCategoryList.as_view(), name='user_categories'),
 
 ]

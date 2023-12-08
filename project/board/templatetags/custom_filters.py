@@ -12,3 +12,4 @@ def status_false(post):
 def post_new_reply_exists(post):
     new_reply_exists = post.replies.filter(status=False)
     return new_reply_exists
+

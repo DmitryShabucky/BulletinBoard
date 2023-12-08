@@ -14,7 +14,7 @@
 
 {% if posts %}
 <div style="display: flex; align-items: center;">
-  <h5 style="margin-right: 10px; color: blue">Ваши объявления::</h5>
+  <h5 style="margin-right: 10px; color: blue">Ваши объявления:</h5>
     <h5> ({{ posts | length }})</h5>
   <a href="{% url 'user_posts'  %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
   </div><br>
@@ -29,18 +29,30 @@
 <div style="display: flex; align-items: center;">
   <h5 style="margin-right: 10px; color: blue">Отклики на Ваши объявления::</h5><h5> ({{ replies | length }})  </h5>
     {% if new_replies %}
-    <h5 style="margin-right: 10px;"> - Новых: ({{ new_replies | length }})</h5>
+    <h5 style="margin-right: 10px;">  - Новых: ({{ new_replies | length }})</h5>
     {% endif %}
     <h5>
   <a href="{% url 'user_replies'  %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
   </div><br>
 {% endif %}
+
 {% if user_replies %}
 <div style="display: flex; align-items: center;">
     <h5 style="margin-right: 10px; color: blue">Ваши отклики:</h5><h5> ({{ user_replies | length }}) </h5>
   <a href="{% url 'user_replies_left'   %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
 </div><br>
 {% endif %}
+
+
+<div style="display: flex; align-items: center;">
+    <h5 style="margin-right: 10px; color: blue">Ваши подписки:</h5><h5> ({{ categories | length }}) </h5>
+    {% if categories %}
+    <a href="{% url 'user_categories'   %}" class="btn btn-dark btn-sm" style="margin-left: 10px;">Смотреть</a>
+    {% else %}
+    <h5> Вы еще ни на что не подписаны</h5>
+    {% endif %}
+</div><br>
+
 <div style="display: flex; align-items: center;">
   <h5 style="margin-right: 10px; color: blue">Персональные данные:</h5>
   <a href="{% url 'user_detail' user.pk  %}" class="btn btn-dark btn-sm">Смотреть</a>
